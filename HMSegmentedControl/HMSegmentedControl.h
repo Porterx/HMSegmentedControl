@@ -117,6 +117,13 @@ typedef enum {
 @property (nonatomic, assign) CGFloat verticalDividerWidth;
 
 /**
+ Height the vertical divider between segments that is added when `verticalDividerEnabled` is set to YES.
+ 
+ Default is `self.frame.size.height - (self.selectionIndicatorHeight * 4)`
+ */
+@property (nonatomic, assign) CGFloat verticalDividerHeight;
+
+/**
  Specifies the style of the control
  
  Default is `HMSegmentedControlTypeText`

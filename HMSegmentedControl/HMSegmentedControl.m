@@ -294,8 +294,12 @@
             CGRect rect;
             if (self.segmentWidthStyle == HMSegmentedControlSegmentWidthStyleFixed) {
                 rect = CGRectMake((self.segmentWidth * idx) + (self.segmentWidth - stringWidth) / 2, y, stringWidth, stringHeight);
-                rectDiv = CGRectMake((self.segmentWidth * idx) - (self.verticalDividerWidth / 2), self.selectionIndicatorHeight * 2, self.verticalDividerWidth, self.frame.size.height - (self.selectionIndicatorHeight * 4));
                 fullRect = CGRectMake(self.segmentWidth * idx, 0, self.segmentWidth, oldRect.size.height);
+                if (self.verticalDividerHeight > 0) {
+                    rectDiv = CGRectMake((self.segmentWidth * idx) - (self.verticalDividerWidth / 2), (self.frame.size.height / 2.0f) - (self.verticalDividerHeight / 2.0f), self.verticalDividerWidth, self.verticalDividerHeight);
+                }else {
+                    rectDiv = CGRectMake((self.segmentWidth * idx) - (self.verticalDividerWidth / 2), self.selectionIndicatorHeight * 2, self.verticalDividerWidth, self.frame.size.height - (self.selectionIndicatorHeight * 4));
+                }
             } else if (self.segmentWidthStyle == HMSegmentedControlSegmentWidthStyleDynamic) {
                 // When we are drawing dynamic widths, we need to loop the widths array to calculate the xOffset
                 CGFloat xOffset = 0;
@@ -310,7 +314,11 @@
                 CGFloat widthForIndex = [[self.segmentWidthsArray objectAtIndex:idx] floatValue];
                 rect = CGRectMake(xOffset, y, widthForIndex, stringHeight);
                 fullRect = CGRectMake(self.segmentWidth * idx, 0, widthForIndex, oldRect.size.height);
-                rectDiv = CGRectMake(xOffset - (self.verticalDividerWidth / 2), self.selectionIndicatorHeight * 2, self.verticalDividerWidth, self.frame.size.height - (self.selectionIndicatorHeight * 4));
+                if (self.verticalDividerHeight > 0) {
+                    rectDiv = CGRectMake((self.segmentWidth * idx) - (self.verticalDividerWidth / 2), (CGRectGetHeight(self.frame) / 2.0f) - (self.verticalDividerHeight / 2.0f), self.verticalDividerWidth, self.verticalDividerHeight);
+                }else {
+                    rectDiv = CGRectMake(xOffset - (self.verticalDividerWidth / 2), self.selectionIndicatorHeight * 2, self.verticalDividerWidth, self.frame.size.height - (self.selectionIndicatorHeight * 4));
+                }
             }
             
             // Fix rect position/size to avoid blurry labels
@@ -534,7 +542,7 @@
     CGFloat indicatorYOffset = 0.0f;
     
     if (self.selectionIndicatorLocation == HMSegmentedControlSelectionIndicatorLocationDown) {
-        indicatorYOffset = self.bounds.size.height - self.selectionIndicatorHeight + self.selectionIndicatorEdgeInsets.bottom;
+        indicatorYOffset = self.bounds.size.height - (self.selectionIndicatorHeight + self.selectionIndicatorEdgeInsets.bottom);
     }
     
     if (self.selectionIndicatorLocation == HMSegmentedControlSelectionIndicatorLocationUp) {
@@ -571,7 +579,7 @@
             CGFloat widthToStartOfSelectedIndex = (self.segmentWidth * self.selectedSegmentIndex);
             
             CGFloat x = ((widthToEndOfSelectedSegment - widthToStartOfSelectedIndex) / 2) + (widthToStartOfSelectedIndex - sectionWidth / 2);
-            return CGRectMake(x + self.selectionIndicatorEdgeInsets.left, indicatorYOffset, sectionWidth - self.selectionIndicatorEdgeInsets.right, self.selectionIndicatorHeight);
+            return CGRectMake(x + self.selectionIndicatorEdgeInsets.left, indicatorYOffset, sectionWidth - self.selectionIndicatorEdgeInsets.left - self.selectionIndicatorEdgeInsets.right, self.selectionIndicatorHeight);
         } else {
             if (self.segmentWidthStyle == HMSegmentedControlSegmentWidthStyleDynamic) {
                 CGFloat selectedSegmentOffset = 0.0f;
@@ -583,10 +591,10 @@
                     selectedSegmentOffset = selectedSegmentOffset + [width floatValue];
                     i++;
                 }
-                return CGRectMake(selectedSegmentOffset + self.selectionIndicatorEdgeInsets.left, indicatorYOffset, [[self.segmentWidthsArray objectAtIndex:self.selectedSegmentIndex] floatValue] - self.selectionIndicatorEdgeInsets.right, self.selectionIndicatorHeight + self.selectionIndicatorEdgeInsets.bottom);
+                return CGRectMake(selectedSegmentOffset + self.selectionIndicatorEdgeInsets.left, indicatorYOffset, [[self.segmentWidthsArray objectAtIndex:self.selectedSegmentIndex] floatValue] - self.selectionIndicatorEdgeInsets.left - self.selectionIndicatorEdgeInsets.right, self.selectionIndicatorHeight);
             }
             
-            return CGRectMake((self.segmentWidth + self.selectionIndicatorEdgeInsets.left) * self.selectedSegmentIndex, indicatorYOffset, self.segmentWidth - self.selectionIndicatorEdgeInsets.right, self.selectionIndicatorHeight);
+            return CGRectMake(self.segmentWidth * self.selectedSegmentIndex + self.selectionIndicatorEdgeInsets.left, indicatorYOffset, self.segmentWidth - self.selectionIndicatorEdgeInsets.left + self.selectionIndicatorEdgeInsets.right, self.selectionIndicatorHeight);
         }
     }
 }
